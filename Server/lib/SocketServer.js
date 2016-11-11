@@ -62,24 +62,25 @@ function SocketServer(server) {
 
     function init() {
         io.on('connection', function (socket) {
-            socket.on('getMapping', function (request) {
+            socket.on('getMapping', function (request, ack) {
+                var completion = function (response) {
+                    if (typeof ack === "function") {
+                        ack(response);
+                    } else {
+                        socket.emit('mapping', response);
+                    }
+                }
                 if (!config.auth.useAuthentication) {
                     if (request.userId || (request.groupId && !request.appId)) {
-                        that.emit('getMapping', request, function (response) {
-                            socket.emit('mapping', response);
-                        });
+                        that.emit('getMapping', request, completion);
                     }
                 } else {
                     if (socket.request.user.logged_in && socket.request.user.id) {
                         request.userId = socket.request.user.id;
-                        that.emit('getMapping', request, function (response) {
-                            socket.emit('mapping', response);
-                        });
+                        that.emit('getMapping', request, completion);
                     } else {
                         if (request.groupId && !request.appId) {
-                            that.emit('getMapping', request, function (response) {
-                                socket.emit('mapping', response);
-                            });
+                            that.emit('getMapping', request, completion);
                         }
                     }
 
