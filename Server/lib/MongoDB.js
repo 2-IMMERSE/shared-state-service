@@ -308,6 +308,41 @@ function MongoDB() {
                                 });
                             }
                         });
+                    } else if (cElement.type == 'setInsert') {
+                        stateModels[path].update({
+                            key: cElement.key
+                        }, {
+                            $setOnInsert: {
+                                value: cElement.value
+                            }
+                        }, {
+                            upsert: true
+                        }, function (err, result) {
+                            if (err) {
+                                logger.error('DB-Error', err);
+                            } else {
+                                if (result.upserted) {
+                                    onChanged(path, cElement);
+                                }
+                            }
+                        })
+                    } else if (cElement.type == 'setCas') {
+                        stateModels[path].findOneAndUpdate({
+                            key: cElement.key,
+                            value: cElement.oldValue,
+                        }, {
+                            $set: {
+                                value: cElement.value
+                            }
+                        }, {
+                            upsert: false
+                        }, function (err, result) {
+                            if (err) {
+                                logger.error('DB-Error', err);
+                            } else if (result) {
+                                onChanged(path, cElement);
+                            }
+                        })
                     }
                 })(element);
 
