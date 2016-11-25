@@ -526,17 +526,17 @@ function MongoDB() {
                                                 if (ids.user === data.userId) {
                                                     callback(true);
                                                 } else {
-                                                    callback(false);
+                                                    callback(false, false, "Wrong userId: " + ids.user + " !== " + data.userId);
                                                 }
                                             } else {
                                                 if (ids.userApp) {
                                                     if (ids.userApp === data.userId) {
                                                         callback(true);
                                                     } else {
-                                                        callback(false);
+                                                        callback(false, false, "Wrong userApp: " + ids.userApp + " !== " + data.userId);
                                                     }
                                                 } else {
-                                                    callback(false);
+                                                    callback(false, false, "No userId or userApp");
                                                 }
                                             }
                                         }

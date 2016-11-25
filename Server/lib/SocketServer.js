@@ -134,12 +134,13 @@ function SocketServer(server) {
                 if (config.auth.useAuthentication) {
                     data.userId = socket.request.user.id;
                 }
-                that.emit('join', path, data, function (allowed, isGroup) {
+                that.emit('join', path, data, function (allowed, isGroup, reason) {
                     logger.info("onJoin callback: " + JSON.stringify({
                         path: path,
                         data: data,
                         allowed: allowed,
                         isGroup: isGroup,
+                        reason: reason,
                     }));
                     if (allowed) {
                         socket.MSagentID = data.agentID
@@ -153,7 +154,7 @@ function SocketServer(server) {
                         doStatus();
                         doUpdateStatus(socket);
                     } else {
-                        sendPrivate('ssError', 'not allowed to join');
+                        sendPrivate('ssError', 'not allowed to join due to: ' + reason);
                     }
                 });
 
