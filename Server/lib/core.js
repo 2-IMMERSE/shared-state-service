@@ -60,13 +60,14 @@ function Core() {
 
     function onGetMapping(request, callback) {
         if (request.userId && request.appId) {
-            db.getUserMapping(request, callback);
+            return db.getUserMapping(request, callback);
         } else {
             if (request.groupId) {
-                db.getGroupMapping(request, callback);
+                return db.getGroupMapping(request, callback);
             }
         }
-
+        logger.warn("onGetMapping: Negatively acknowledging invalid request: " + JSON.stringify(request));
+        callback({ error: "invalid mapping request (2)" });
     };
 
 

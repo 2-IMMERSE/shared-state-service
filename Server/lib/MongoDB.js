@@ -123,7 +123,7 @@ function MongoDB() {
     function collectServices() {
         userModel.find({}, function (err, docs) {
             if (err) {
-                logger.error(err);
+                logger.error('collectServices: (userModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
                     usedIds.push(docs[i].service)
@@ -134,7 +134,7 @@ function MongoDB() {
         });
         appModel.find({}, function (err, docs) {
             if (err) {
-                logger.error(err);
+                logger.error('collectServices: (appModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
                     usedIds.push(docs[i].service)
@@ -145,7 +145,7 @@ function MongoDB() {
         });
         userAppModel.find({}, function (err, docs) {
             if (err) {
-                logger.error(err);
+                logger.error('collectServices: (userAppModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
                     usedIds.push(docs[i].service)
@@ -156,7 +156,7 @@ function MongoDB() {
         });
         groupModel.find({}, function (err, docs) {
             if (err) {
-                logger.error(err);
+                logger.error('collectServices: (groupModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
                     usedIds.push(docs[i].service)
@@ -223,7 +223,7 @@ function MongoDB() {
         if (data.length == 0) {
             stateModels[path].find({}, function (err, docs) {
                 if (err) {
-                    logger.error(err);
+                    logger.error('DB-Error (getState 1)', err);
                 } else {
                     for (var i = 0; i < docs.length; i++) {
                         var state = {};
@@ -250,7 +250,7 @@ function MongoDB() {
                 },
                 function (err, docs) {
                     if (err) {
-                        logger.error(err);
+                        logger.error('DB-Error (getState 2)', err);
                     } else {
                         for (var i = 0; i < docs.length; i++) {
                             var state = {};
@@ -287,7 +287,7 @@ function MongoDB() {
                             upsert: true
                         }, function (err) {
                             if (err) {
-                                logger.error('DB-Error', err);
+                                logger.error('DB-Error (set)', err);
                             } else {
                                 onChanged(path, cElement);
                             }
@@ -301,7 +301,7 @@ function MongoDB() {
                             } else if (doc) {
                                 doc.remove(function (err) {
                                     if (err) {
-                                        logger.error('DB-Error', err);
+                                        logger.error('DB-Error (remove)', err);
                                     } else {
                                         onRemoved(path, doc);
                                     }
@@ -319,7 +319,7 @@ function MongoDB() {
                             upsert: true
                         }, function (err, result) {
                             if (err) {
-                                logger.error('DB-Error', err);
+                                logger.error('DB-Error (setInsert)', err);
                             } else {
                                 if (result.upserted) {
                                     onChanged(path, cElement);
@@ -338,7 +338,7 @@ function MongoDB() {
                             upsert: false
                         }, function (err, result) {
                             if (err) {
-                                logger.error('DB-Error', err);
+                                logger.error('DB-Error (setCas)', err);
                             } else if (result) {
                                 onChanged(path, cElement);
                             }
@@ -358,7 +358,8 @@ function MongoDB() {
             userId: request.userId
         }, function (err, doc) {
             if (err) {
-                logger.error(err);
+                logger.error("getUserMapping: DB error (1): ", err);
+                callback({ "error": "getUserMapping: DB error (1): " + err });
             } else {
                 if (doc) {
                     scopes.user = doc.service;
@@ -367,7 +368,8 @@ function MongoDB() {
                     appId: request.appId
                 }, function (err, doc) {
                     if (err) {
-                        logger.error(err);
+                        logger.error("getUserMapping: DB error (2): ", err);
+                        callback({ "error": "getUserMapping: DB error (2): " + err });
                     } else {
                         if (doc) {
                             scopes.app = doc.service;
@@ -377,7 +379,8 @@ function MongoDB() {
                             appId: request.appId
                         }, function (err, doc) {
                             if (err) {
-                                logger.error(err);
+                                logger.error("getUserMapping: DB error (3): ", err);
+                                callback({ "error": "getUserMapping: DB error (3): " + err });
                             } else {
                                 if (doc) {
                                     scopes.userApp = doc.service;
@@ -397,7 +400,8 @@ function MongoDB() {
             groupId: request.groupId
         }, function (err, doc) {
             if (err) {
-                logger.error(err);
+                logger.error("getGroupMapping: DB error: ", err);
+                callback({ "error": "getGroupMapping: DB error: " + err });
             } else {
                 if (doc) {
                     scopes.group = doc.service;

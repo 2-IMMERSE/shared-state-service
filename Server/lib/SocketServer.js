@@ -63,7 +63,12 @@ function SocketServer(server) {
     function init() {
         io.on('connection', function (socket) {
             socket.on('getMapping', function (request, ack) {
+                logger.debug("GetMapping: " + JSON.stringify(request) + ", ack: " + !!ack);
                 var completion = function (response) {
+                    // Optional unique token to aid debugging
+                    if (request.token) response.token = request.token;
+
+                    logger.debug("GetMapping completion: " + JSON.stringify(request) + ", ack: " + !!ack + ", --> " + JSON.stringify(response));
                     if (typeof ack === "function") {
                         ack(response);
                     } else {
@@ -72,19 +77,21 @@ function SocketServer(server) {
                 }
                 if (!config.auth.useAuthentication) {
                     if (request.userId || (request.groupId && !request.appId)) {
-                        that.emit('getMapping', request, completion);
+                        return that.emit('getMapping', request, completion);
                     }
                 } else {
                     if (socket.request.user.logged_in && socket.request.user.id) {
                         request.userId = socket.request.user.id;
-                        that.emit('getMapping', request, completion);
+                        return that.emit('getMapping', request, completion);
                     } else {
                         if (request.groupId && !request.appId) {
-                            that.emit('getMapping', request, completion);
+                            return that.emit('getMapping', request, completion);
                         }
                     }
 
                 }
+                logger.warn("Negatively acknowledging GetMapping request: " + JSON.stringify(request) + ", ack: " + !!ack);
+                completion({ error: "invalid mapping request (1)" });
             });
         });
 
@@ -123,12 +130,17 @@ function SocketServer(server) {
             };
 
             function onJoin(data) {
-                logger.debug('somebody want to join', path, 'with', data);
+                logger.debug('onJoin: Somebody wants to join: "' + path + '", with: ' + JSON.stringify(data));
                 if (config.auth.useAuthentication) {
                     data.userId = socket.request.user.id;
                 }
                 that.emit('join', path, data, function (allowed, isGroup) {
-                    logger.info('path', path, 'data', data, 'allowed', allowed, 'isGroup', isGroup);
+                    logger.info("onJoin callback: " + JSON.stringify({
+                        path: path,
+                        data: data,
+                        allowed: allowed,
+                        isGroup: isGroup,
+                    }));
                     if (allowed) {
                         socket.MSagentID = data.agentID
                         socket.MSpresence = 'connected';
