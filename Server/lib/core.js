@@ -23,6 +23,8 @@ function Core() {
     var db = null;
     var connectors = [];
     var MySocketsServer = {};
+    var groupMappingRequestsInFlight = {};
+    var userMappingRequestsInFlight = {};
 
     setupDBConnection();
     setupClientConnection();
@@ -58,12 +60,30 @@ function Core() {
         MySocketsServer.on('getMapping', onGetMapping);
     };
 
+    function mappingSerialise(obj, key, handler, completion) {
+        var pending = obj[key];
+        var callback = function() {
+            completion.apply(this, arguments);
+            if (pending.length) {
+                pending.shift()();
+            } else {
+                delete obj[key];
+            }
+        };
+        if (pending) {
+            pending.push(handler.bind(null, callback));
+        } else {
+            pending = obj[key] = [];
+            handler(callback);
+        }
+    }
+
     function onGetMapping(request, callback) {
         if (request.userId && request.appId) {
-            return db.getUserMapping(request, callback);
+            return mappingSerialise(userMappingRequestsInFlight, request.userId + "|" + request.appId, db.getUserMapping.bind(db, request), callback);
         } else {
             if (request.groupId) {
-                return db.getGroupMapping(request, callback);
+                return mappingSerialise(groupMappingRequestsInFlight, 'group:' + request.groupId, db.getGroupMapping.bind(db, request), callback);
             }
         }
         logger.warn("onGetMapping: Negatively acknowledging invalid request: " + JSON.stringify(request));
