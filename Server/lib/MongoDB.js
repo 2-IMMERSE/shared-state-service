@@ -413,9 +413,11 @@ function MongoDB() {
     };
 
     function checkMappings(request, scopes, callback) {
+        var completion = callback.bind(null, request);
         if (request.user) {
             if (scopes.user) {
                 request.user = scopes.user;
+                completion();
             } else {
                 request.user = createServiceID();
                 usedIds.push(request.user);
@@ -424,12 +426,13 @@ function MongoDB() {
                 var newUserModel = new userModel();
                 newUserModel.userId = request.userId;
                 newUserModel.service = request.user;
-                newUserModel.save();
+                newUserModel.save(completion);
             }
         }
         if (request.app) {
             if (scopes.app) {
                 request.app = scopes.app;
+                completion();
             } else {
                 request.app = createServiceID();
                 usedIds.push(request.app);
@@ -438,12 +441,13 @@ function MongoDB() {
                 var newAppModel = new appModel();
                 newAppModel.appId = request.appId;
                 newAppModel.service = request.app;
-                newAppModel.save();
+                newAppModel.save(completion);
             }
         }
         if (request.userApp) {
             if (scopes.userApp) {
                 request.userApp = scopes.userApp;
+                completion();
             } else {
                 request.userApp = createServiceID();
                 usedIds.push(request.userApp);
@@ -453,13 +457,14 @@ function MongoDB() {
                 newUserAppModel.userId = request.userId;
                 newUserAppModel.appId = request.appId;
                 newUserAppModel.service = request.userApp;
-                newUserAppModel.save();
+                newUserAppModel.save(completion);
 
             }
         }
         if (request.groupId) {
             if (scopes.group) {
                 request.group = scopes.group;
+                completion();
             } else {
                 request.group = createServiceID();
                 usedIds.push(request.group);
@@ -468,11 +473,9 @@ function MongoDB() {
                 var newGroupModel = new groupModel();
                 newGroupModel.groupId = request.groupId;
                 newGroupModel.service = request.group;
-                newGroupModel.save();
+                newGroupModel.save(completion);
             }
         }
-
-        callback(request);
     }
 
 
