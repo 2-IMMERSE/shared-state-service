@@ -147,6 +147,12 @@ function SocketServer(server) {
                         socket.MSpresence = 'connected';
                         allowedUsers.push(socket.request.user.id);
                         clients[socket.id] = socket;
+                        if (data.sendInitState) {
+                            that.emit('getState', path, [], function (datagram) {
+                                sendPrivate('initState', datagram);
+                            });
+                            data.initStateComing = true;
+                        }
                         sendPrivate('joined', data);
                         if (isGroup) {
                             thisIsGroup = true;
