@@ -122,6 +122,7 @@ function SocketServer(server) {
             function onGetInitState(data) {
                 if (checkIfAllowed()) {
                     that.emit('getState', path, data, function (datagram) {
+                        logger.debug('onGetInitState: Sending initial data for: "' + path + '"');
                         sendPrivate('initState', datagram);
                     });
                 } else {
@@ -149,6 +150,7 @@ function SocketServer(server) {
                         clients[socket.id] = socket;
                         if (data.sendInitState) {
                             that.emit('getState', path, [], function (datagram) {
+                                logger.debug('onJoin: Sending initial data for: "' + path + '"');
                                 sendPrivate('initState', datagram);
                             });
                             data.initStateComing = true;
