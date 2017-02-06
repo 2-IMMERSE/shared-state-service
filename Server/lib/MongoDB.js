@@ -322,6 +322,8 @@ function MongoDB() {
                                 onChanged(path, cElement);
                             }
                         });
+                    } else {
+                        logger.error('DB-Error: unexpected operation type: ' + cElement.type);
                     }
                 })(element);
             }
