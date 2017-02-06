@@ -58,8 +58,6 @@ function SocketServer(server) {
         // return accept(new Error(message));
     }
 
-
-
     function init() {
         io.on('connection', function (socket) {
             socket.on('getMapping', function (request, ack) {
@@ -74,7 +72,7 @@ function SocketServer(server) {
                     } else {
                         socket.emit('mapping', response);
                     }
-                }
+                };
                 if (!config.auth.useAuthentication) {
                     if (request.userId || (request.groupId && !request.appId)) {
                         return that.emit('getMapping', request, completion);
@@ -94,20 +92,16 @@ function SocketServer(server) {
                 completion({ error: "invalid mapping request (1)" });
             });
         });
-
     }
 
     function createNameSpace(path) {
         var nsp = io.of('/' + path);
-
-
 
         logger.info('created nsp with', path);
         var clients = {};
         var allowedUsers = [];
 
         nsp.on('connection', function (socket) {
-
 
             var thisIsGroup = false;
 
@@ -117,7 +111,6 @@ function SocketServer(server) {
             socket.on('getState', onGetState);
             socket.on('changeState', onChangeState);
             socket.on('getInitState', onGetInitState);
-
 
             function onGetInitState(data) {
                 if (checkIfAllowed()) {
@@ -144,7 +137,7 @@ function SocketServer(server) {
                         reason: reason,
                     }));
                     if (allowed) {
-                        socket.MSagentID = data.agentID
+                        socket.MSagentID = data.agentID;
                         socket.MSpresence = 'connected';
                         allowedUsers.push(socket.request.user.id);
                         clients[socket.id] = socket;
@@ -165,8 +158,6 @@ function SocketServer(server) {
                         sendPrivate('ssError', 'not allowed to join due to: ' + reason);
                     }
                 });
-
-
             };
 
             function onDisconnect() {
@@ -178,7 +169,6 @@ function SocketServer(server) {
                     doUpdateStatus(socket.MSagentID);
                 }
             };
-
 
             function onChangePresence(data) {
                 if (checkIfAllowed()) {
@@ -193,7 +183,6 @@ function SocketServer(server) {
                 }
             };
 
-
             function onGetState(data) {
                 if (checkIfAllowed()) {
                     doGetState(data);
@@ -201,7 +190,6 @@ function SocketServer(server) {
                     sendPrivate('ssError', 'not logged in');
                 }
             };
-
 
             function onChangeState(data) {
                 if (checkIfAllowed()) {
@@ -217,7 +205,7 @@ function SocketServer(server) {
                     var statusInfo = {
                         clients: clientKeys.length,
                         presence: []
-                    }
+                    };
                     for (var i = 0; i < clientKeys.length; i++) {
                         var clientstatus = {
                             key: clients[clientKeys[i]].MSagentID,
@@ -237,19 +225,18 @@ function SocketServer(server) {
                     var statusInfo = {
                         clients: clientKeys.length,
                         presence: []
-                    }
-
+                    };
 
                     if (typeof theSocket == 'string') {
                         statusInfo.presence = [{
                             key: theSocket,
                             value: 'offline'
-                    }];
+                        }];
                     } else {
                         statusInfo.presence = [{
                             key: theSocket.MSagentID,
                             value: theSocket.MSpresence
-                    }];
+                        }];
                     }
 
                     sendAll('status', statusInfo);
@@ -286,7 +273,6 @@ function SocketServer(server) {
                     } else {
                         return false;
                     }
-
                 } else {
                     return false;
                 }
@@ -295,14 +281,8 @@ function SocketServer(server) {
             nsp.sendALL = sendAll;
         });
 
-
-
         nameSpaces[path] = nsp;
     };
-
-
-
-
 
     function createNSP(pathes) {
         if (Array.isArray(pathes)) {
@@ -314,17 +294,13 @@ function SocketServer(server) {
         }
     };
 
-
-
     function changeState(path, data) {
         nameSpaces[path].sendALL('changeState', data);
     };
 
-
     that = {
         changeState: changeState,
         createNSP: createNSP
-
     };
 
     init();

@@ -59,8 +59,8 @@ function ExpressServer() {
             clientSecret: config.auth.GOOGLE_CLIENT_SECRET,
             //NOTE :
             //Carefull ! and avoid usage of Private IP, otherwise you will get the device_id device_name issue for Private IP during authentication
-            //The workaround is to set up thru the google cloud console a fully qualified domain name such as http://mydomain:3000/ 
-            //then edit your /etc/hosts local file to point on your private IP. 
+            //The workaround is to set up thru the google cloud console a fully qualified domain name such as http://mydomain:3000/
+            //then edit your /etc/hosts local file to point on your private IP.
             //Also both sign-in button + callbackURL has to be share the same url, otherwise two cookies will be created and lead to lost your session
             //if you use it.
             callbackURL: config.auth.GOOGLE_CALLBACK_URL,
@@ -78,8 +78,6 @@ function ExpressServer() {
             });
         }
     ));
-
-
 
 
     // configure Express
@@ -132,7 +130,7 @@ function ExpressServer() {
                 res.cookie('redirectMS', req.query.redirectMS, {
                     maxAge: 900000,
                     httpOnly: true
-                })
+                });
             } else {
                 res.clearCookie('redirectMS');
             }
@@ -149,7 +147,6 @@ function ExpressServer() {
     //   request.  If authentication fails, the user will be redirected back to the
     //   login page.  Otherwise, the primary route function function will be called,
     //   which, in this example, will redirect the user to the home page.
-
 
 
     app.get('/auth/google/callback', function (req, res, next) {
@@ -177,7 +174,6 @@ function ExpressServer() {
     });
 
 
-
     app.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/');
@@ -197,7 +193,6 @@ function ExpressServer() {
     });
 
 
-
     // Simple route middleware to ensure user is authenticated.
     //   Use this route middleware on any resource that needs to be protected.  If
     //   the request is authenticated (typically via a persistent login session),
@@ -212,7 +207,6 @@ function ExpressServer() {
         }
         res.redirect('/');
     }
-
 
 
     function getServer() {

@@ -12,7 +12,6 @@
 
 function Core() {
 
-
     var config = require('../config');
 
     var log4js = require('log4js');
@@ -90,29 +89,25 @@ function Core() {
         callback({ error: "invalid mapping request (2)" });
     };
 
-
     function onChangeState(path, data) {
         if (db) {
             db.changeState(path, data);
         } else {
-            logger.error('No DB connected?')
+            logger.error('No DB connected?');
         }
     };
-
 
     function onGetState(path, data, callback) {
         if (db) {
             db.getState(path, data, callback);
         } else {
-            logger.error('No DB connected?')
+            logger.error('No DB connected?');
         }
     };
 
     function onJoin(path, data, callback) {
         db.checkAllowed(path, data, callback);
     };
-
-
 
     function sendRemoveState(path, data) {
         MySocketsServer.removeState(path, data);

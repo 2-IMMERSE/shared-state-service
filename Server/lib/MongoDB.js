@@ -36,12 +36,11 @@ function MongoDB() {
 
 
     function init() {
-
         db = require('mongoose');
 
         db.connection.on('error', function (error) {
             logger.error('Couldn\'t connect to DB: ', error.name, error.message);
-            logger.error('terminating')
+            logger.error('terminating');
             process.exit(1);
         });
         db.connection.once('open', function () {
@@ -117,7 +116,6 @@ function MongoDB() {
         groupModel = db.model(config.mappingPath + '_group', groupSchema);
 
         collectServices();
-
     };
 
     function collectServices() {
@@ -126,7 +124,7 @@ function MongoDB() {
                 logger.error('collectServices: (userModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
-                    usedIds.push(docs[i].service)
+                    usedIds.push(docs[i].service);
                 }
             }
             userCollect = true;
@@ -137,7 +135,7 @@ function MongoDB() {
                 logger.error('collectServices: (appModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
-                    usedIds.push(docs[i].service)
+                    usedIds.push(docs[i].service);
                 }
             }
             appCollect = true;
@@ -148,7 +146,7 @@ function MongoDB() {
                 logger.error('collectServices: (userAppModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
-                    usedIds.push(docs[i].service)
+                    usedIds.push(docs[i].service);
                 }
             }
             userAppCollect = true;
@@ -159,16 +157,13 @@ function MongoDB() {
                 logger.error('collectServices: (groupModel.find)', err);
             } else {
                 for (var i = 0, len = docs.length; i < len; i++) {
-                    usedIds.push(docs[i].service)
+                    usedIds.push(docs[i].service);
                 }
             }
             groupCollect = true;
             createPathes();
         });
     };
-
-
-
 
     function createPathes(newPath) {
         if (newPath) {
@@ -209,16 +204,7 @@ function MongoDB() {
         }
     };
 
-
-
-
-
-
-
-
-
     function getState(path, data, callback) {
-
         var datagram = [];
         if (data.length == 0) {
             stateModels[path].find({}, function (err, docs) {
@@ -231,11 +217,9 @@ function MongoDB() {
                         state.key = docs[i].key;
                         state.value = docs[i].value;
                         datagram.push(state);
-
                     }
                     callback(datagram);
                 }
-
             });
         } else {
             var keys = [];
@@ -258,7 +242,6 @@ function MongoDB() {
                             state.key = docs[i].key;
                             state.value = docs[i].value;
                             datagram.push(state);
-
                         }
                         callback(datagram);
                     }
@@ -266,14 +249,10 @@ function MongoDB() {
         }
     };
 
-
     function changeState(path, data) {
-
         if (data && path) {
-
             for (var i = 0; i < data.length; i++) {
                 var element = data[i];
-
 
                 (function (cElement) {
                     if (cElement.type == 'set') {
@@ -291,7 +270,7 @@ function MongoDB() {
                             } else {
                                 onChanged(path, cElement);
                             }
-                        })
+                        });
                     } else if (cElement.type == 'remove') {
                         stateModels[path].findOne({
                             key: cElement.key
@@ -325,7 +304,7 @@ function MongoDB() {
                                     onChanged(path, cElement);
                                 }
                             }
-                        })
+                        });
                     } else if (cElement.type == 'setCas') {
                         stateModels[path].findOneAndUpdate({
                             key: cElement.key,
@@ -342,17 +321,14 @@ function MongoDB() {
                             } else if (result) {
                                 onChanged(path, cElement);
                             }
-                        })
+                        });
                     }
                 })(element);
-
             }
-
         }
     };
 
     function getUserMapping(request, callback) {
-
         var scopes = {};
         userModel.findOne({
             userId: request.userId
@@ -409,7 +385,6 @@ function MongoDB() {
                 checkMappings(request, scopes, callback);
             }
         });
-
     };
 
     function checkMappings(request, scopes, callback) {
@@ -458,7 +433,6 @@ function MongoDB() {
                 newUserAppModel.appId = request.appId;
                 newUserAppModel.service = request.userApp;
                 newUserAppModel.save(completion);
-
             }
         }
         if (request.groupId) {
@@ -562,8 +536,7 @@ function MongoDB() {
             if (usedIds.indexOf(id) == -1) {
                 found = false;
             }
-        }
-        while (found)
+        } while (found);
         return id;
     };
 
@@ -573,8 +546,7 @@ function MongoDB() {
                 type: 'set',
                 key: doc.key,
                 value: doc.value
-                    }
-            ];
+            }];
         that.emit('changeState', path, datagram);
     };
 
@@ -583,24 +555,18 @@ function MongoDB() {
                 type: 'remove',
                 key: doc.key,
                 value: null
-                    }
-            ];
+            }];
         that.emit('changeState', path, datagram);
-
     };
-
-
 
     init();
 
     that = {
-
         getState: getState,
         changeState: changeState,
         getUserMapping: getUserMapping,
         getGroupMapping: getGroupMapping,
         checkAllowed: checkAllowed
-
     };
 
     that.__proto__ = EventEmitter.prototype;
