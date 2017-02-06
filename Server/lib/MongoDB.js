@@ -19,6 +19,8 @@ function MongoDB() {
     log4js.configure(config.logConfig);
     var logger = log4js.getLogger('MongoDB');
     var crypto = require('crypto');
+    var promise = require('promise');
+    require('promise/lib/rejection-tracking').enable();
 
     var db = null;
 
@@ -34,9 +36,12 @@ function MongoDB() {
     var userAppCollect = false;
     var groupCollect = false;
 
+    if (!config.mongoose) config.mongoose = {};
+    config.mongoose.promiseLibrary = promise;
 
     function init() {
         db = require('mongoose');
+        db.Promise = promise;
 
         db.connection.on('error', function (error) {
             logger.error('Couldn\'t connect to DB: ', error.name, error.message);
@@ -48,7 +53,6 @@ function MongoDB() {
         });
 
         db.connect(config.mongoose.uri, config.mongoose.options);
-
 
         var safe = {
             w: 0,
