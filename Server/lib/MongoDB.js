@@ -268,10 +268,10 @@ function MongoDB() {
                             }
                         }, {
                             upsert: true
-                        }, function (err) {
+                        }, function (err, result) {
                             if (err) {
                                 logger.error('DB-Error (set)', err);
-                            } else {
+                            } else if (result.upserted || result.nUpserted || result.nModified) {
                                 onChanged(path, cElement);
                             }
                         });
