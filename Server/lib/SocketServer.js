@@ -10,6 +10,9 @@
  * @copyright 2014 Institut für Rundfunktechnik GmbH, All rights reserved.
  */
 
+var capabilities = {
+};
+
 function SocketServer(server) {
     var that;
 
@@ -149,6 +152,7 @@ function SocketServer(server) {
                             data.initStateComing = true;
                         }
                         sendPrivate('joined', data);
+                        sendPrivate('capabilities', capabilities);
                         if (isGroup) {
                             thisIsGroup = true;
                         }
