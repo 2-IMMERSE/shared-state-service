@@ -253,8 +253,15 @@ function MongoDB() {
         }
     };
 
-    function changeState(path, data) {
-        if (data && path) {
+    function changeState(path, data, completion) {
+        if (data && data.length && path) {
+            var pending = data.length;
+            var done = function() {
+                pending--;
+                if (pending === 0) {
+                    completion();
+                }
+            };
             for (var i = 0; i < data.length; i++) {
                 var element = data[i];
 
@@ -274,6 +281,7 @@ function MongoDB() {
                             } else if (result.upserted || result.nUpserted || result.nModified) {
                                 onChanged(path, cElement);
                             }
+                            done();
                         });
                     } else if (cElement.type == 'remove') {
                         stateModels[path].findOne({
@@ -290,6 +298,7 @@ function MongoDB() {
                                     }
                                 });
                             }
+                            done();
                         });
                     } else if (cElement.type == 'setInsert') {
                         stateModels[path].update({
@@ -308,6 +317,7 @@ function MongoDB() {
                                     onChanged(path, cElement);
                                 }
                             }
+                            done();
                         });
                     } else if (cElement.type == 'setCas') {
                         stateModels[path].findOneAndUpdate({
@@ -325,12 +335,16 @@ function MongoDB() {
                             } else if (result) {
                                 onChanged(path, cElement);
                             }
+                            done();
                         });
                     } else {
                         logger.error('DB-Error: unexpected operation type: ' + cElement.type);
+                        done();
                     }
                 })(element);
             }
+        } else {
+            completion();
         }
     };
 

@@ -11,6 +11,7 @@
  */
 
 var capabilities = {
+    changeStateAck: true,
 };
 
 function SocketServer(server) {
@@ -33,6 +34,8 @@ function SocketServer(server) {
     var passportSocketIo = require("passport.socketio");
 
     var nameSpaces = {};
+
+    var noop = function() { };
 
 
     io.use(passportSocketIo.authorize({
@@ -195,11 +198,13 @@ function SocketServer(server) {
                 }
             };
 
-            function onChangeState(data) {
+            function onChangeState(data, ack) {
+                var completion = (typeof ack === "function") ? ack : noop;
                 if (checkIfAllowed()) {
-                    doChangeState(data);
+                    doChangeState(data, completion);
                 } else {
                     sendPrivate('ssError', 'not logged in');
+                    completion();
                 }
             };
 
@@ -255,8 +260,8 @@ function SocketServer(server) {
                 });
             };
 
-            function doChangeState(data) {
-                that.emit('changeState', path, data);
+            function doChangeState(data, completion) {
+                that.emit('changeState', path, data, completion);
             };
 
             function sendPrivate(event, msg) {

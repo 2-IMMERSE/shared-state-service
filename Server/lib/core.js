@@ -89,11 +89,12 @@ function Core() {
         callback({ error: "invalid mapping request (2)" });
     };
 
-    function onChangeState(path, data) {
+    function onChangeState(path, data, completion) {
         if (db) {
-            db.changeState(path, data);
+            db.changeState(path, data, completion);
         } else {
             logger.error('No DB connected?');
+            completion();
         }
     };
 
