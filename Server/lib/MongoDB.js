@@ -328,12 +328,18 @@ function MongoDB() {
                                 value: cElement.value
                             }
                         }, {
-                            upsert: false
+                            upsert: false,
+                            returnOriginal: false,
+                            returnNewDocument: true,
+                            new: true,
                         }, function (err, result) {
                             if (err) {
                                 logger.error('DB-Error (setCas)', err);
                             } else if (result) {
-                                onChanged(path, cElement);
+                                onChanged(path, {
+                                    key: result.key,
+                                    value: result.value,
+                                });
                             }
                             done();
                         });
