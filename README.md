@@ -2,6 +2,9 @@
 
 In this folder you will find the Shared-State library developed for [MediaScape project](http://mediascapeproject.eu/).
 
+This repository includes modifactions to the original MediaScape implementation, as part of the 2-Immerse project.
+These modifications can be identified by use of the repository history.
+
 ## Navigation
 [Goals][] | [Structure][] | [Authors][] | [License][]
 
@@ -22,12 +25,19 @@ Shared data is a basic building block in MediaScape. Data synchronization is a c
 - Njål Borch (njaal.borch@norut.no)
 - Andreas Bosl (bosl@irt.de)
 
+2-Immerse modifications:
+
+- Jonathan Rennison (jonathan.rennison@bt.com)
+
 ### License
 
 Unless otherwise stated:
 
 Copyright 2015 Norut Tromsø, Norway.  
 Copyright 2015 IRT Munich, Germany.
+
+2-Immerse modifications:  
+Copyright 2016-2018 British Telecommunications (BT) PLC.  
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
